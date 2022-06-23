@@ -7,9 +7,6 @@ library(RImageJROI)
 
 # https://satijalab.org/seurat/articles/spatial_vignette_2.html#human-lymph-node-akoya-codex-system
 
-
-
-
 ### Data files to read
 CELL_COORD_PATH <- "Projects/Resolve_Seurat/data//Resolve_Mm_BHA1_DAPI.tiff_coordinates.csv"
 CELL_COUNT_PATH <- "Projects/Resolve_Seurat/data/Resolve_Mm_BHA1_DAPI.tiff_measurements.csv"
@@ -29,7 +26,7 @@ DAPI_HEIGHT <- 32160 # 32160 = Height of the DAPI image
 cell_coordinates[, x := DAPI_HEIGHT - x] 
 cell_coordinates[, x_tile := DAPI_HEIGHT - x_tile]
 
-cell_coordinates[, cell_id := paste0("Cell_", cell_id)]
+cell_coordinates[, cell_id := paste0("Cell_", cell_id - 1)]
 
 ### Process the measurements to build the count matrix
 measurements <- fread(CELL_COUNT_PATH)
