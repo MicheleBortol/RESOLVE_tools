@@ -6,28 +6,24 @@ from skimage import measure, io
 def get_arguments():	
 	"""
 	Parses and checks command line arguments, and provides an help text.
-	Assumes 4 and returns 4 positional command line arguments:
-	sample_name = Name of the sample
+	Assumes 3 and returns 3 positional command line arguments:
 	mask_file = Path to the input mask file
 	transcript_file = Path to the input transcript file
 	output_file = Path to the output single cell data file
 	"""
 	parser = argparse.ArgumentParser(description = "Assigns transcripts to cells.")
-	parser.add_argument("sample_name", help = "name of the sample")
 	parser.add_argument("mask_file", help = "path to the input cell mask file")
 	parser.add_argument("transcript_file", help = "path to the input transcript file")
 	parser.add_argument("output_file", help = "path to the cell data output")
 	args = parser.parse_args()
-	return args.sample_name, args.mask_file, args.transcript_file, \
-		args.output_file
+	return args.mask_file, args.transcript_file, args.output_file
 
 def gene_counter(regionmask, intensity_image):
 	"""	Adds all values in a boolean array """
 	return np.sum(intensity_image[regionmask])
 
 if __name__ == "__main__":
-	sample_name, mask_file_name, transcript_file_name, \
-		output_file = get_arguments()
+	mask_file_name, transcript_file_name, output_file = get_arguments()
 		
 	print("Processing Mask")
 	mask = io.imread(mask_file_name, "tiff")
@@ -47,7 +43,8 @@ if __name__ == "__main__":
 
 	print("Measuring cell area and position")
 
-	measures = [pd.DataFrame(measure.regionprops_table(mask, None, ["area", "centroid"]))]
+	measures = [pd.DataFrame(measure.regionprops_table(mask, None, ["area",
+		"centroid", "label"]))]
 	print("Counting transcripts in each cell")
 	for gene in geneset:
 		genemask = np.zeros(mask.shape, dtype = "int")
@@ -62,6 +59,9 @@ if __name__ == "__main__":
 		print(gene)
 
 	cells = pd.concat(measures, axis = 1, ignore_index = False)
-
+	cells.rename(columns = {"centroid-0":"centroid.y",
+		"centroid-1":"centroid.x"}, inplace = True)
 	print("Prepare and write csv output")
-	cells.to_csv(output_file, header = True, index = True, index_label = "cell")
+	cells.to_csv(output_file, header = True, index = True,
+			index_label = "cell")
+
