@@ -63,4 +63,16 @@ To do:
 
 ## B.2) Giotto <a name="#Giotto"></a>
 
+[Giotto from Seurat object example script](https://github.com/MicheleBortol/RESOLVE_tools/blob/main/bin/resolvegiottoseurat.R)
 
+The script is based on the [seuratToGiotto function](https://github.com/RubD/Giotto/blob/suite/R/interoperability.R).
+
+The script currently requires a development version of Giotto from the [suite branch](https://github.com/RubD/Giotto/tree/suite)
+
+To do:
++ Support for cells coming for more than one image in the same objet?
++ Add direct creation of a Giotto object without passing from Seurat?
+
+Note:
++ The coordinate systems for cells are different between Seurat and Giotto (in Seurat X and Y are inverted). 
++ The transcript coordinates are also imported by `seuratToGiotto` but never used by the package.
