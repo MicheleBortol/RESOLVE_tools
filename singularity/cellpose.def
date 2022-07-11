@@ -1,0 +1,50 @@
+bootstrap: docker
+From: debian:latest
+
+%post
+
+######################################################################
+## Prepare the containe with updates + python
+######################################################################
+
+# make directory to mount the data
+mkdir /data
+
+# Install python 3.9 
+
+apt update
+apt -y upgrade
+apt install -y wget
+apt install -y python3.9-dev python3.9-distutils
+
+wget https://bootstrap.pypa.io/get-pip.py
+python3.9 get-pip.py
+rm get-pip.py
+
+################################################################################
+## Install Cellpose
+################################################################################
+
+# Get cellpose models
+wget --save-cookies cookies.txt 'https://docs.google.com/uc?export=download&id=1zHGFYCqRCTwTPwgEUMNZu0EhQy2zaovg' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1/p' > confirm.txt
+wget --load-cookies cookies.txt -O models.zip 'https://docs.google.com/uc?export=download&id=1zHGFYCqRCTwTPwgEUMNZu0EhQy2zaovg&confirm='$(<confirm.txt)
+
+mkdir -p /root/.cellpose/models
+
+tar -cvzf models.zip /root/.cellpose/models
+
+rm confirm.txt cookies.txt models.zip
+
+pip3.9 install cellpose==2.0.5
+
+################################################################################
+## Install scikit-image, opencv, pandas, read-roi and roifile
+################################################################################
+
+pip3.9 install scikit-image==0.19.2
+
+pip3.9 install pandas==1.4.2
+
+pip3.9 install roifile==2022.3.18 
+
+pip3.9 install opencv-python-headless==4.6.0.66 
