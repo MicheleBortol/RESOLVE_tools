@@ -3,39 +3,69 @@ Tentative set of tools and scripts for analysing spatial transcriptomic data wit
 
 ## Contents:
 + A) [PreProcessing](#PreProcessing)
-    + (A.1) [Segmentation](##Segmentation)
-    + (A.2) [Expression assignment](##expression_assign)  bin/segmenter.py = Just a wrapper around cellpose.
+    + (A.1) [Nextflow pipeline](##Pipeline)
+        + (A.1.1) [Segmentation](###Segmentation)
+        + (A.1.2) [Expression assignment](###expression_assign)
 + B) [Analysis](#Analysis)
   + (B.1) [Seurat](##Seurat)
   + (B.1) [Giotto](##Giotto)
 
 
-# A) PreProcessingg <a name="PreProcessing"></a>
-Python3 scripts for:
+# A) PreProcessing <a name="PreProcessing"></a>
+[Nextflow](https://www.nextflow.io/) pipeline which runs image segmentation with [cellpose](https://github.com/MouseLand/cellpose) and then counts the transcripts in each cell. The pipeline uses two Python3 scripts for:
 + Segmentation
 + Expression assignment = counting the transcripts in each cell
 
+These scripts can be used independently or as part of the Nextflow pipeline provided.
 
-## A.1) Segmentation <a name="#Segmentation"></a>
+*Dependencies*
++ [Nextflow](https://www.nextflow.io/)
++ [Singularity](https://docs.sylabs.io/guides/latest/user-guide/) 
+
+The pipeline automatically fetches the following singularity container with all its dependendencies:
+
+https://cloud.sylabs.io/library/michelebortol/resolve_tools/cellpose_skimage
+
+The definition file is provided [here](https://github.com/MicheleBortol/RESOLVE_tools/blob/main/singularity/cellpose.def).
+
+## A.1) Nextflow pipeline <a name="##Pipeline"></a>
+
++ **Parameters**
+For an example see the provided example config [file](https://github.com/MicheleBortol/RESOLVE_tools/blob/main/example.config)
+    
+    *Input/output Parameters:*
+    + `params.input_path` = Path to the resolve folder with the Panoramas to be processed
+    + `params.output_path` = Path for output
+
+    *cellpose Segmentation Parameters:*
+    + `params.model_name` = "cyto" (recommended) or any model that uses 1 DNA channel.
+    + `params.probability_threshold` = floating point number between -6 and +6 see [cellpose threshold documentation](https://cellpose.readthedocs.io/en/latest/settings.html#mask-threshold).
+    + `params.cell_diameter` = Cell diameter or `None` for automatic estimation, see [cellpose diameter documentation]https://cellpose.readthedocs.io/en/latest/settings.html#diameter.
+    + `params.do_zip` =	`true` or `false`.  Set to false to skip making ImageJ ROIs (faster)
+    + `params.output_path` = "output/nextflow_test"
+
++ **Input**
+    Folder with the panoramas to be processed. All panoramas are expected to 
++ **Output**
+    +
+    +
+    +
+
+### A.1.1) Segmentation <a name="##Segmentation"></a>
 [Segmentation script](https://github.com/MicheleBortol/RESOLVE_tools/blob/main/bin/segmenter.py)
 Just a wrapper around cellpose. It assumes the input is a single channel grayscale image with the nuclei. It requires the following positional arguments:
-+ sample_name = name of the sample (currently required but unused, would be useful if we make a Nextflow pipeline from these scripts)
 + tiff_path = path to the image to segment
 + model_name = model to use for the segmentation			
 + prob_thresh = probability threshold
 + output_mask_file = path to the cell mask output
 + output_roi_file = path to the roi mask output
 
-To Do:
-+ Add optional parameter for diameter selection. Currently the diameter is estimated from the image.
-
-## A.2) Expression assignment <a name="#expression_assign"></a>
+### A.1.2) Expression assignment <a name="##expression_assign"></a>
 [Expression assignment script](https://github.com/MicheleBortol/RESOLVE_tools/blob/main/bin/segmenter.py)
 Counts the transcripts in each cell from the segmentation mask. Equivalent to the Polylux counts unless:
 + Overlapping ROIs
 + Transcripts outside the border of the image or lying exactly on the ROI border (resolution is 1 pixel)
 It requires the following positional arguments:
-+ sample_name = name of the sample (currently required but unused, would be useful if we make a Nextflow pipeline from these scripts)
 + mask_file = Path to the input mask file
 + transcript_file = Path to the input transcript file
 + output_file = Path to the output single cell data file
