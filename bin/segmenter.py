@@ -55,9 +55,9 @@ if __name__ == "__main__":
 		io.imsave(output_mask_file, mask)
 	
 		# extract outlines and make ROIs
-		mask = np.rot90(mask, k = -1)
-		mask = np.fliplr(mask)
 		if output_zip != None:
+			mask = np.rot90(mask, k = -1)
+			mask = np.fliplr(mask)
 			mask_shape = mask.shape
 			edges = np.where(utils.masks_to_outlines(mask), mask, 0)
 			mapper = lambda n: np.column_stack(np.unravel_index(np.flatnonzero(edges == n),
