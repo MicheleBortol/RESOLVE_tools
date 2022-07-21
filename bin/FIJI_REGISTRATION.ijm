@@ -7,7 +7,7 @@ targetfile = File.openDialog("Target Image");
 open(targetfile)
 rename("Target");
 
-// Mirror the target to match the source (OPTIONAL)
+// Mirror the source to match the target (OPTIONAL)
 selectImage("Source");
 run("Flip Vertically");
 // Can add rotation here if necessary
