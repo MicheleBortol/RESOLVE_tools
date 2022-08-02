@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import pandas as pd
 from skimage import measure, io
+from PIL import Image
 Image.MAX_IMAGE_PIXELS = 9999999999
 
 def get_arguments():	
